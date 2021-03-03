@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>sports</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+</head>
+
+<body>
+	<div class="container text-center">
+		<h2 class="text-center mt-5 mb-5"></h2>
+		<!-- ========================= Filter For select ================= -->
+		<form>
+			<div class="row">
+				<div class="col-md-2"></div>
+				<div class="col-md-6">
+					<select name="select" id="select_value" class="form-control">
+						<option value="Best Paid Sport">Best Paid Sport</option>
+						<option value="Athletes & Comparing Their Salary">Athletes & Comparing Their Salary</option>
+						<option value="Endorsement & Salary By Players">Endorsement & Salary By Players</option>
+						<option value="Highest Paid League">Highest Paid League</option>
+					</select>
+				</div>
+				<div class="col-md-2">
+					<input type="submit" class="form-control" value="Submit" id="submit_button">
+				</div>
+				<div class="col-md-2"></div>
+			</div>
+		</form>
+		<!-- =========================================================================== -->
+		<div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+	</div>
+
+
+	<svg class="bar-chart"></svg>
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		$(document).ready(function() {
+
+			$(document).on('click', '#submit_button', function() {
+				var skill = document.getElementById("select_value").value;
+				$.ajax({
+					type: 'POST',
+					url: '/basketball',
+					data: {
+						skill: skill,
+					},
+				})
+				.done(function(data) {
+
+					console.log(data.Sport)
+					if (skill == 'Endorsement & Salary By Players'){
+
+						var trace1 = {
+							x: data.Sport,
+							y: data.Annual_Pay,
+							mode: 'markers',
+							type: 'scatter'
+						};
+						var data = [trace1];
+						Plotly.newPlot('myDiv', data);
+					}
+					else{
+						var data = [{
+							type: 'bar',
+							x: data.Sport,
+							y: data.Annual_Pay,
+							orientation: 'bar'
+						}];
+
+						Plotly.newPlot('myDiv', data);
+					}
+				});
+				event.preventDefault();
+			});
+		});
+	</script>
+	<script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
